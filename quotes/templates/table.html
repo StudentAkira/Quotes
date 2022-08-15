@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Table</title>
+</head>
+<body>
+<div style="display:flex;width: 100%; flex-wrap: wrap;">
+    {% for item in data.0.keys %}
+        <div style="flex:15%;border-left:1px solid black;border-bottom:1px solid black;padding:2px;">{{item}}</div>
+    {% endfor %}
+    {% for item in data %}
+        {% for part in item.values %}
+            <div style="flex:15%;border-left:1px solid black;border-bottom:1px solid black;padding:2px;">{{part}}</div>
+        {% endfor %}
+    {% endfor %}
+</div>
+</body>
+</html>

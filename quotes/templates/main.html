@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+</head>
+<body>
+    <form action="/table/" method="post">
+        {% csrf_token %}
+        <div style="display:flex;flex-wrap: wrap;">
+            {% for quote_name in quote_names %}
+                <div style="flex:10%;"><h2>
+                    <label>{{quote_name}}</label>
+                    <input type="checkbox" name={{quote_name}}>
+                </h2></div>
+            {% endfor %}
+        </div>
+        <input type="submit" value="Get quotes">
+    </form>
+</body>
+</html>
