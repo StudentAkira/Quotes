@@ -4,8 +4,6 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 import xmltodict
 
-from .models import Quote
-
 
 class MainPageAPIView(APIView):
     def get(self, request):
