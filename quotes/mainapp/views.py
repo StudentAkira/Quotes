@@ -1,5 +1,7 @@
 import requests
 from django.core.cache import cache
+import tempfile
+from django.http import HttpResponse, FileResponse
 from django.shortcuts import render
 from rest_framework.views import APIView
 import xmltodict
@@ -34,3 +36,15 @@ class TablePageView(APIView):
         filtered_data = list(filter(lambda x: x['CharCode'] in currencies, data['ValCurs']['Valute']))
         cache.set('quoted_currencies', filtered_data)
         return render(request, 'table.html', {'data': filtered_data})
+
+
+class ExportResultsAPIView(APIView):
+    def get(self, request):
+        file = tempfile.NamedTemporaryFile('w+t')
+        file.writelines('test')
+        file.writelines('test2')
+        file.seek(0)
+
+        response = HttpResponse(file, content_type='plain/text')
+        response['Content-Disposition'] = 'attachment; filename="foo.txt"'
+        return response
