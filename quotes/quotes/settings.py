@@ -64,16 +64,7 @@ WSGI_APPLICATION = 'quotes.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'quotes',
-        'USER': 'quoter',
-        'PASSWORD': 'user7689462',
-        'HOST': 'localhost',
-        'POST': '5432',
-    }
-}
+
 
 CACHES = {
     'default': {
