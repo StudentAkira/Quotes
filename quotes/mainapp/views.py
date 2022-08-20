@@ -29,8 +29,10 @@ class MainPageAPIView(View):
         data = xmltodict.parse(response.text)
         for item in data['ValCurs']['Valute']:
             quote_names += [item['CharCode']]
-        cache.set('quote_names', quote_names)
-
+        data_in_cache = cache.get('quoted_names')
+        #todo
+        new_data_in_cache = list(set(data_in_cache + quote_names) if data_in_cache else quote_names)
+        cache.set('quoted_currencies', new_data_in_cache)
         response = render(request, 'main.html', {'quote_names': quote_names})
         return response
 
@@ -43,15 +45,22 @@ class TablePageView(View):
             filtered_data = list(filter(lambda x: x['CharCode'] in currencies, cache.get('quoted_currencies')))
             if len(filtered_data) == len(currencies):
                 response = render(request, 'table.html', {'data': filtered_data})
-                print(filtered_data)
+                print('all data from cache')
                 return response
 
         response = requests.get('https://www.cbr.ru/scripts/XML_daily.asp?date_req=14/08/2022')
         data = xmltodict.parse(response.text)
         filtered_data = list(filter(lambda x: x['CharCode'] in currencies, data['ValCurs']['Valute']))
-        cache.set('quoted_currencies', filtered_data)
+        data_in_cache = cache.get('quoted_currencies')
+
+        new_data = list(filter(lambda item: item not in data_in_cache, filtered_data))\
+            if data_in_cache else filtered_data
+
+        cache.set('quoted_currencies', data_in_cache+new_data) \
+            if data_in_cache else cache.set('quoted_currencies', filtered_data)
+
         response = render(request, 'table.html', {'data': filtered_data})
-        print(filtered_data)
+        print('data from request. cant get such items from cache : ', new_data)
         return response
 
 
