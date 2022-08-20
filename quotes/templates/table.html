@@ -6,6 +6,7 @@
 </head>
 <body>
 <div style="display:flex;width: 100%; flex-wrap: wrap;">
+
     {% for item in data.0.keys %}
         <div style="flex:15%;border-left:1px solid black;border-bottom:1px solid black;padding:2px;">{{item}}</div>
     {% endfor %}
@@ -14,8 +15,10 @@
             <div style="flex:15%;border-left:1px solid black;border-bottom:1px solid black;padding:2px;">{{part}}</div>
         {% endfor %}
     {% endfor %}
+
 </div>
-<a href="/export/?data={{data}}&datatype=xslx">Get XLSX</a>
+<a href="/export/?data={{ data }}&datatype=xlsx">Get XLSX</a>
 <a href="/export/?data={{data}}&datatype=pdf">Get PDF</a>
+{{ data }}
 </body>
 </html>
