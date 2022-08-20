@@ -36,12 +36,14 @@ class MainPageAPIView(View):
 
 
 class TablePageView(View):
-    def post(self, request):
-        currencies = list(request.POST)[1:]
+
+    def get(self, request):
+        currencies = list(request.GET)[1:]
         if cache.get('quoted_currencies'):
             filtered_data = list(filter(lambda x: x['CharCode'] in currencies, cache.get('quoted_currencies')))
             if len(filtered_data) == len(currencies):
                 response = render(request, 'table.html', {'data': filtered_data})
+                print(filtered_data)
                 return response
 
         response = requests.get('https://www.cbr.ru/scripts/XML_daily.asp?date_req=14/08/2022')
@@ -49,6 +51,7 @@ class TablePageView(View):
         filtered_data = list(filter(lambda x: x['CharCode'] in currencies, data['ValCurs']['Valute']))
         cache.set('quoted_currencies', filtered_data)
         response = render(request, 'table.html', {'data': filtered_data})
+        print(filtered_data)
         return response
 
 

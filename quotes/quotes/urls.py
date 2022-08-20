@@ -7,4 +7,5 @@ urlpatterns = [
     path('main/', MainPageAPIView.as_view()),
     path('table/', TablePageView.as_view()),
     path('export/', ExportResultsAPIView.as_view()),
+
 ]

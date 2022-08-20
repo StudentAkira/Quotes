@@ -5,7 +5,7 @@
     <title>Main</title>
 </head>
 <body>
-    <form action="/table/" method="post" >
+    <form action="/table/" method="GET" >
         {% csrf_token %}
         <div style="display:flex;flex-wrap: wrap;">
             {% for quote_name in quote_names %}
