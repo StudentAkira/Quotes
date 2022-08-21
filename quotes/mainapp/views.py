@@ -30,9 +30,8 @@ class MainPageAPIView(View):
         for item in data['ValCurs']['Valute']:
             quote_names += [item['CharCode']]
         data_in_cache = cache.get('quoted_names')
-        #todo
         new_data_in_cache = list(set(data_in_cache + quote_names) if data_in_cache else quote_names)
-        cache.set('quoted_currencies', new_data_in_cache)
+        cache.set('quote_names', new_data_in_cache)
         response = render(request, 'main.html', {'quote_names': quote_names})
         return response
 
