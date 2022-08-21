@@ -43,7 +43,7 @@ class TablePageView(View):
         if cache.get('quoted_currencies'):
             filtered_data = list(filter(lambda x: x['CharCode'] in currencies, cache.get('quoted_currencies')))
             if len(filtered_data) == len(currencies):
-                response = render(request, 'table.html', {'data': filtered_data})
+                response = render(request, 'table.html', {'data': filtered_data, 'currencies': currencies})
                 print('all data from cache')
                 return response
 
@@ -58,32 +58,43 @@ class TablePageView(View):
         cache.set('quoted_currencies', data_in_cache+new_data) \
             if data_in_cache else cache.set('quoted_currencies', filtered_data)
 
-        response = render(request, 'table.html', {'data': filtered_data})
+        response = render(request, 'table.html', {'data': filtered_data, 'currencies': currencies})
         print('data from request. cant get such items from cache : ', new_data)
         return response
 
 
 class ExportResultsAPIView(View):
     def get(self, request):
-        data = dict(request.GET)['data'][0].strip('[]')[1:-1:].split('}, {')
-        amount_of_rows = len(dict(request.GET)['data'][0].strip('[]')[1:-1:].split('}, {'))
+        print(request.GET)
+        currencies = dict(request.GET)['currencies'][0][1:-1].replace("'", '').split(', ')
 
-        if request.GET['datatype'] == 'xlsx':
+        if cache.get('quoted_currencies'):
+            data = list(filter(lambda item: item['CharCode'] in currencies, cache.get('quoted_currencies')))
+        else:
+            response = requests.get('https://www.cbr.ru/scripts/XML_daily.asp?date_req=14/08/2022')
+            data = xmltodict.parse(response.text)
+            data = list(filter(lambda x: x['CharCode'] in currencies, data['ValCurs']['Valute']))
+        data_type = dict(request.GET)['datatype'][0]
+        
+        amount_of_rows = len(data)
+        print('\n\n ', data, ' \n\n')
+        print('\n\n ', data_type, ' \n\n')
+        print('\n\n ', amount_of_rows, ' \n\n')
+
+        if data_type == 'xlsx':
             wb = Workbook()
             ws = wb.active
-            ws.append(list(json.loads('{' + data[0].replace("'", '"') + '}').keys()))
+            ws.append(list(data[0].keys()))
             for row in range(amount_of_rows):
-                new_row = json.loads('{'+data[row].replace("'", '"')+'}')
+                new_row = data[row]
                 ws.append(list(new_row.values()))
             with BytesIO(save_virtual_workbook(wb)) as file:
                 response = HttpResponse(file, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
                 response['Content-Disposition'] = 'attachment; filename="foo.xlsx"'
                 return response
 
-        if request.GET['datatype'] == 'pdf':
-            data = [
-                list(json.loads('{' + data[0].replace("'", '"') + '}').keys(), ),
-            ]+[list(json.loads('{' + data[i].replace("'", '"') + '}').values()) for i in range(len(data))]
+        if data_type == 'pdf':
+            data = [list(data[0].keys())]+[list(data[i].values()) for i in range(len(data))]
             pdf = FPDF()
             pdf.add_page()
             pdf.add_font('gargi', '', os.path.join(BASE_DIR, 'media\gargi.ttf'), uni=True)
@@ -100,3 +111,4 @@ class ExportResultsAPIView(View):
                 response['Content-Disposition'] = 'attachment; filename="foo.pdf"'
                 return response
 
+        return HttpResponse('test')
