@@ -87,6 +87,7 @@ class ExportResultsAPIView(View):
             ws.append(list(data[0].keys()))
             for row in range(amount_of_rows):
                 new_row = data[row]
+                print(new_row['Name'], '------------------------------==============')
                 ws.append(list(new_row.values()))
             with BytesIO(save_virtual_workbook(wb)) as file:
                 response = HttpResponse(file, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -97,8 +98,8 @@ class ExportResultsAPIView(View):
             data = [list(data[0].keys())]+[list(data[i].values()) for i in range(len(data))]
             pdf = FPDF()
             pdf.add_page()
-            pdf.add_font('gargi', '', os.path.join(BASE_DIR, 'media\gargi.ttf'), uni=True)
-            pdf.set_font('gargi', '', 14)
+            pdf.add_font('fontF', '', os.path.join(BASE_DIR, 'media\\fontF.ttf'), uni=True)
+            pdf.set_font('fontF', '', 14)
             line_height = pdf.font_size * 5
             col_width = pdf.epw / 6
             for row in data:
